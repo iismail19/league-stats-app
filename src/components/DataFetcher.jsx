@@ -27,7 +27,7 @@ const DataFetcher = () => {
   function getTeam(match) {
     if (match) {
       const teamId = match.info.participants.find((user) => user.puuid === puuid).teamId;
-      return teamId;
+      return teamId; // 100 or 200
     }
     return null;
   }
