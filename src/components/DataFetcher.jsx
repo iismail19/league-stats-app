@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button"
 
 const DataFetcher = () => {
   const [matches, setMatches] = useState([]);
@@ -25,19 +26,23 @@ const DataFetcher = () => {
   });
 
   function getTeam(match) {
-    if (match) {
-      const teamId = match.info.participants.find((user) => user.puuid === puuid).teamId;
-      return teamId; // 100 or 200
+    if (match && match.info && match.info.participants) {
+      const participant = match.info.participants.find((user) => user.puuid === puuid);
+      if (participant) {
+        return participant.teamId; // 100 or 200
+      }
     }
     return null;
   }
 
   function getWinner(match, teamId) {
-      if (match) {
-        const win = match.info.teams.find((team) => team.teamId === teamId).win;
-        return win;
+    if (match && match.info && match.info.teams) {
+      const team = match.info.teams.find((team) => team.teamId === teamId);
+      if (team) {
+        return team.win;
       }
-      return null
+    }
+    return null;
   }
 
   // Display each map to screen
@@ -62,9 +67,7 @@ const DataFetcher = () => {
     <div>
       <h1>Fetched Data</h1>
       <p>Click button to get name</p>
-      <button onClick={() => matchDataList.mutate()}>
-        Get Matches for God of Wind
-      </button>
+      <Button onClick={() => matchDataList.mutate()}>Get Matches for God of Wind</Button>
       <MatchList /> {/* Call the MatchList function to render matches */}
     </div>
   );
