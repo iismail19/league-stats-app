@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button"
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 const DataFetcher = () => {
   const [matches, setMatches] = useState([]);
@@ -27,7 +35,9 @@ const DataFetcher = () => {
 
   function getTeam(match) {
     if (match && match.info && match.info.participants) {
-      const participant = match.info.participants.find((user) => user.puuid === puuid);
+      const participant = match.info.participants.find(
+        (user) => user.puuid === puuid
+      );
       if (participant) {
         return participant.teamId; // 100 or 200
       }
@@ -53,7 +63,22 @@ const DataFetcher = () => {
     return matches.map((match) => {
       const teamId = getTeam(match);
       const win = getWinner(match, teamId) ? "Won" : "Lost";
-      return <div key={match.metadata.matchId}>{match.metadata.matchId} and {teamId} and {win} </div>;
+      return (
+        <div key={match.metadata.matchId}>
+          <Card className="m-2" style={{ margin: "0.5rem", border: win === "Won" ? "2px solid green" : "2px solid red" }}>
+            <CardHeader>
+              <CardTitle>Card Title</CardTitle>
+              <CardDescription>Match Data for match Id: {match.metadata.matchId}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Team: {teamId} & Result: {win} </p>
+            </CardContent>
+            <CardFooter>
+              <p>Game Mode: {match.info.gameMode}</p>
+            </CardFooter>
+          </Card>
+        </div>
+      );
     });
   };
 
@@ -67,7 +92,9 @@ const DataFetcher = () => {
     <div>
       <h1>Fetched Data</h1>
       <p>Click button to get name</p>
-      <Button onClick={() => matchDataList.mutate()}>Get Matches for God of Wind</Button>
+      <Button onClick={() => matchDataList.mutate()}>
+        Get Matches for God of Wind
+      </Button>
       <MatchList /> {/* Call the MatchList function to render matches */}
     </div>
   );
