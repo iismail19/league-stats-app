@@ -13,6 +13,7 @@ import {
 const DataFetcher = () => {
   const [matches, setMatches] = useState([]);
   const [puuid, setPuuid] = useState("");
+  const [gameName, setGameName] = useState("God of Wind"); // get from result of fetchRiotId todo update later
 
   const fetchRiotId = async () => {
     const result = await fetch("http://localhost:5005/", {
@@ -65,16 +66,47 @@ const DataFetcher = () => {
       const win = getWinner(match, teamId) ? "Won" : "Lost";
       return (
         <div key={match.metadata.matchId}>
-          <Card className="m-2" style={{ margin: "0.5rem", border: win === "Won" ? "2px solid green" : "2px solid red" }}>
+          <Card
+            className="m-2"
+            style={{
+              margin: "0.5rem",
+              border: win === "Won" ? "2px solid green" : "2px solid red",
+            }}
+          >
             <CardHeader>
-              <CardTitle>Card Title</CardTitle>
-              <CardDescription>Match Data for match Id: {match.metadata.matchId}</CardDescription>
+              <CardTitle>Match Summary</CardTitle>
+              <CardDescription>
+                Match ID: {match.metadata.matchId}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Team: {teamId} & Result: {win} </p>
+              <div
+                className="w-full"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div className="w-14 h-14 flex-shrink-0">
+                  <img
+                    className="w-full h-full object-cover rounded"
+                    src={"https://placehold.co/100x100/png"}
+                    alt="PlaceHolder"
+                  />
+                </div>
+                <div className="flex-1 px-4 min-w-0">
+                  <p className="text-sm font-medium truncate">{gameName}</p>
+                </div>
+                <div className="w-32 flex-shrink-0">
+                  <p className="text-sm text-gray-500">Stats Go here</p>
+                </div>
+              </div>
             </CardContent>
             <CardFooter>
-              <p>Game Mode: {match.info.gameMode}</p>
+              <p className="text-sm text-gray-600">
+                Game Mode: {match.info.gameMode}
+              </p>
             </CardFooter>
           </Card>
         </div>
