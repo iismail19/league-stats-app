@@ -55,7 +55,7 @@ const DataFetcher = () => {
     return null;
   }
 
-  // Display each map to screen
+  // Display each map to screen - create a list of cards
   const MatchList = () => {
     if (!matches || matches.length === 0) {
       return <div>No matches found.</div>;
