@@ -19,7 +19,9 @@ export const transformMatchData = (
   const deaths = participant.deaths || 0;
   const assists = participant.assists || 0;
   const kda =
-    deaths === 0 ? kills + assists : ((kills + assists) / deaths).toFixed(2);
+    deaths === 0
+      ? (kills + assists).toString()
+      : ((kills + assists) / deaths).toFixed(2);
 
   const teamKills = match.info.participants
     .filter((user) => user.teamId === teamId)

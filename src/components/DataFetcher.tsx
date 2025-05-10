@@ -4,41 +4,47 @@ import { Button } from "./ui/button";
 import MatchCard from "./MatchCard";
 import { transformMatchData } from "../utils/matchDataUtils";
 import { Match } from "../types/matchTypes";
+import { CardWithSearch } from "./ui/CardWithSearch";
 
 const DataFetcher: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [puuid, setPuuid] = useState("");
-  const [gameName, setGameName] = useState("God of Wind");
+  const [gameName, setGameName] = useState("");
+  const [tagline, setTagline] = useState("");
 
-  const fetchRiotId = async () => {
+  const fetchRiotId = async (gameName: string, tagline: string) => {
     const result = await fetch("http://localhost:5005/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ gameName: "God of Wind", tagline: "NA1" }),
+      body: JSON.stringify({ gameName, tagline }),
     });
     return result.json();
   };
 
   const matchDataList = useMutation({
-    mutationFn: fetchRiotId,
+    mutationFn: ({
+      gameName,
+      tagline,
+    }: {
+      gameName: string;
+      tagline: string;
+    }) => fetchRiotId(gameName, tagline),
     onSuccess: (data) => {
       setPuuid(data.puuid || "");
       setMatches(Array.isArray(data.matchDataList) ? data.matchDataList : []);
     },
   });
 
+  const handleSearch = (gameNameInput: string, taglineInput: string) => {
+    setGameName(gameNameInput);
+    setTagline(taglineInput);
+    matchDataList.mutate({ gameName: gameNameInput, tagline: taglineInput });
+  };
+
   return (
     <div>
-      <h1>Fetched Data</h1>
-      <p>Click button to get name</p>
-      <Button
-        onClick={() => matchDataList.mutate()}
-        disabled={matchDataList.isMutating}
-      >
-        {matchDataList.isMutating
-          ? "Loading..."
-          : "Get Matches for God of Wind"}
-      </Button>
+      <h1>Summoner Search</h1>
+      <CardWithSearch onSearch={handleSearch} />
       <div>
         {matchDataList.isError && (
           <div>Error: {matchDataList.error.message}</div>
