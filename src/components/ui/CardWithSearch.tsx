@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./card";
-import { Input } from "./input";
+import { Input } from "@/components/ui/input";
 import { Label } from "./label";
 
 interface CardWithSearchProps {
