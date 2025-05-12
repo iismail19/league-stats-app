@@ -24,8 +24,10 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, gameName }) => {
       }}
     >
       <CardHeader>
-        <CardTitle>Match Summary</CardTitle>
-        <CardDescription>Match ID: {data.matchId}</CardDescription>
+        <CardTitle>{gameName}</CardTitle>
+        <CardDescription>
+          {data.win ? "Victory" : "Defeat"} - {data.gameType}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div
@@ -48,19 +50,16 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, gameName }) => {
           </div>
           <div className="w-32 flex-shrink-0">
             <p className="text-sm text-gray-500">
-              Kills: {data.kills} | Deaths: {data.deaths} | Assists:{" "}
-              {data.assists}
+              ⚔️: {data.kills} | ☠️: {data.deaths} | 🤝: {data.assists}
             </p>
             <p className="text-sm text-gray-500">KDA: {data.kda}</p>
             <p className="text-sm text-gray-500">
-              Kill Participation: {data.killParticipation}%
+              Kill/Par: {data.killParticipation}%
             </p>
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <p className="text-sm text-gray-600">Game Mode: {data.gameMode}</p>
-      </CardFooter>
+      <CardFooter></CardFooter>
     </Card>
   );
 };
