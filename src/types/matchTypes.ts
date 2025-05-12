@@ -20,6 +20,7 @@ export interface Match {
     gameMode: string;
     participants: Participant[];
     teams: Team[];
+    queueId: number;
   };
 }
 

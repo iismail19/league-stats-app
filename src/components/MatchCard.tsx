@@ -1,5 +1,5 @@
 import React from "react";
-import { TransformedMatchData } from "../types/matchTypes";
+import { Match, TransformedMatchData } from "../types/matchTypes";
 import {
   Card,
   CardContent,
@@ -8,16 +8,26 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import queueData from "../data/queue.json";
+import { Queue } from "../types/queueTypes";
 
 interface MatchCardProps {
   data: TransformedMatchData;
+  matchData: Match;
   gameName: string;
 }
 
-const MatchCard: React.FC<MatchCardProps> = ({ data, gameName }) => {
+const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
+  // Find the queue description based on the queueId
+  const queue: Queue | undefined = queueData.find(
+    (q) => q.queueId === Number(matchData.info.queueId)
+  );
+
+  const queueDescription = queue ? queue.description : "Unknown Queue";
+
   return (
     <Card
-      className="m-2"
+      className="m-2 w-full"
       style={{
         margin: "0.5rem",
         border: data.win ? "2px solid green" : "2px solid red",
@@ -25,8 +35,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, gameName }) => {
     >
       <CardHeader>
         <CardTitle>{gameName}</CardTitle>
+        <p>{data.matchId}</p>
         <CardDescription>
-          {data.win ? "Victory" : "Defeat"} - {data.gameType}
+          {data.win ? "Victory" : "Defeat"} - {queueDescription}
         </CardDescription>
       </CardHeader>
       <CardContent>

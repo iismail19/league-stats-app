@@ -37,7 +37,7 @@ const DataFetcher: React.FC = () => {
 
   const handleSearch = (gameNameInput: string, taglineInput: string) => {
     setGameName(gameNameInput);
-    setTagline(taglineInput);
+    setTagline(gameNameInput);
     matchDataList.mutate({ gameName: gameNameInput, tagline: taglineInput });
   };
 
@@ -57,6 +57,7 @@ const DataFetcher: React.FC = () => {
               key={match.metadata.matchId}
               data={transformMatchData(match, puuid)}
               gameName={gameName}
+              matchData={match}
             />
           ))
         )}

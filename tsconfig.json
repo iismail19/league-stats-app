@@ -13,6 +13,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "esModuleInterop": true // Added here
+    "esModuleInterop": true,
+    "resolveJsonModule": true // Enable JSON module resolution
   }
 }
