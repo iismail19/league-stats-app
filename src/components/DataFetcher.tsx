@@ -11,6 +11,9 @@ const DataFetcher: React.FC = () => {
   const [gameName, setGameName] = useState("");
   const [tagline, setTagline] = useState("");
   const [failedMatches, setFailedMatches] = useState<string[]>([]);
+  const [unresolvedFailedMatches, setUnresolvedFailedMatches] = useState<
+    string[]
+  >([]);
 
   const fetchRiotId = async (gameName: string, tagline: string) => {
     const result = await fetch("http://localhost:5005/", {
@@ -29,10 +32,16 @@ const DataFetcher: React.FC = () => {
         if (data.match) {
           setMatches((prev) => [...prev, data.match]);
           setFailedMatches((prev) => prev.filter((id) => id !== matchId));
+        } else {
+          setUnresolvedFailedMatches((prev) => [...prev, matchId]);
+          setFailedMatches((prev) => prev.filter((id) => id !== matchId));
         }
+      } else {
+        setUnresolvedFailedMatches((prev) => [...prev, matchId]);
+        setFailedMatches((prev) => prev.filter((id) => id !== matchId));
       }
       // No further retry attempts after this one
-    }, 15000); // Wait 15 seconds before making the single retry request
+    }, 15000);
   };
 
   const matchDataList = useMutation({
@@ -59,6 +68,7 @@ const DataFetcher: React.FC = () => {
   const handleSearch = (gameNameInput: string, taglineInput: string) => {
     setGameName(gameNameInput);
     setTagline(gameNameInput);
+    setUnresolvedFailedMatches([]); // Reset on new search
     matchDataList.mutate({ gameName: gameNameInput, tagline: taglineInput });
   };
 
@@ -86,6 +96,12 @@ const DataFetcher: React.FC = () => {
           <div className="text-yellow-600 mt-4">
             Retrying {failedMatches.length} failed match
             {failedMatches.length > 1 ? "es" : ""}...
+          </div>
+        )}
+        {unresolvedFailedMatches.length > 0 && (
+          <div className="text-red-600 mt-4">
+            Unable to retrieve {unresolvedFailedMatches.length} match
+            {unresolvedFailedMatches.length > 1 ? "es" : ""} after retry.
           </div>
         )}
       </div>
