@@ -60,7 +60,6 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
     <Card
       className="m-2 w-full"
       style={{
-        margin: "0.5rem",
         border: data.win ? "2px solid green" : "2px solid red",
       }}
     >
@@ -76,6 +75,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
           className="w-full"
           style={{
             display: "flex",
+            margin: "0 8px",
             alignItems: "center",
             justifyContent: "space-between",
           }}

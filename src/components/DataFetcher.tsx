@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import MatchCard from "./MatchCard";
 import { transformMatchData } from "../utils/matchDataUtils";
 import { Match } from "../types/matchTypes";
 import { CardWithSearch } from "./ui/CardWithSearch";
+import { Progress } from "@/components/ui/progress";
 
 const DataFetcher: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -14,8 +15,12 @@ const DataFetcher: React.FC = () => {
   const [unresolvedFailedMatches, setUnresolvedFailedMatches] = useState<
     string[]
   >([]);
+  const [progress, setProgress] = useState(0);
 
   const fetchRiotId = async (gameName: string, tagline: string) => {
+    // Add artificial delay to see loading states
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     const result = await fetch("http://localhost:5005/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -72,10 +77,41 @@ const DataFetcher: React.FC = () => {
     matchDataList.mutate({ gameName: gameNameInput, tagline: taglineInput });
   };
 
+  useEffect(() => {
+    if (matchDataList.isPending) {
+      setProgress(0);
+      const timer = setInterval(() => {
+        setProgress((oldProgress) => {
+          if (oldProgress === 100) {
+            clearInterval(timer);
+            return 100;
+          }
+          return Math.min(oldProgress + 10, 100);
+        });
+      }, 150);
+
+      return () => {
+        clearInterval(timer);
+        setProgress(0);
+      };
+    }
+  }, [matchDataList.isPending]);
+
   return (
     <div className="flex flex-col items-center w-full max-w-5xl px-2">
       <CardWithSearch onSearch={handleSearch} />
       <div className="flex flex-col w-full gap-4 mt-4">
+        {/* Progress bar and loading message */}
+        {matchDataList.isPending && (
+          <div className="w-full space-y-4">
+            <Progress value={progress} aria-label="Loading progress" />
+            <p className="text-sm text-gray-600 text-center">
+              Fetching match data... {progress}%
+            </p>
+          </div>
+        )}
+
+        {/* Rest of your existing content */}
         {matchDataList.isError && (
           <div>Error: {matchDataList.error.message}</div>
         )}
