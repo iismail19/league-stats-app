@@ -1,5 +1,5 @@
 import React from "react";
-import { Match, TransformedMatchData } from "../types/matchTypes";
+import { Match, TransformedMatchData, PlayerRow } from "../types/matchTypes";
 import {
   Card,
   CardContent,
@@ -8,6 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import queueData from "../data/queue.json";
 import { Queue } from "../types/queueTypes";
 
@@ -24,6 +30,30 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
   );
 
   const queueDescription = queue ? queue.description : "Unknown Queue";
+
+  // Group players by teamId
+  const teams = matchData.info.participants.reduce(
+    (acc: Record<number, PlayerRow[]>, player) => {
+      const playerRow: PlayerRow = {
+        puuid: player.puuid,
+        championName: player.championName,
+        kills: player.kills,
+        deaths: player.deaths,
+        assists: player.assists,
+        win:
+          matchData.info.teams.find((team) => team.teamId === player.teamId)
+            ?.win || false,
+        teamId: player.teamId,
+      };
+
+      if (!acc[player.teamId]) {
+        acc[player.teamId] = [];
+      }
+      acc[player.teamId].push(playerRow);
+      return acc;
+    },
+    {}
+  );
 
   return (
     <Card
@@ -70,7 +100,44 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter></CardFooter>
+      <CardFooter>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Teams</AccordionTrigger>
+            <AccordionContent>
+              {Object.entries(teams).map(([teamId, players]) => (
+                <Card key={teamId} className="mb-4">
+                  <CardHeader>
+                    <CardTitle>Team {teamId}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {players.map((player) => (
+                      <div
+                        key={player.puuid}
+                        className="flex justify-between items-center border-b py-2"
+                      >
+                        <div className="flex items-center">
+                          <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/15.9.1/img/champion/${player.championName}.png`}
+                            alt={player.championName}
+                            className="w-8 h-8 rounded mr-2"
+                          />
+                          <span className="text-sm font-medium">
+                            {player.championName}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          K/D/A: {player.kills}/{player.deaths}/{player.assists}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </CardFooter>
     </Card>
   );
 };

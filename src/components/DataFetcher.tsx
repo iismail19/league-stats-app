@@ -10,6 +10,7 @@ const DataFetcher: React.FC = () => {
   const [puuid, setPuuid] = useState("");
   const [gameName, setGameName] = useState("");
   const [tagline, setTagline] = useState("");
+  const [failedMatches, setFailedMatches] = useState<string[]>([]);
 
   const fetchRiotId = async (gameName: string, tagline: string) => {
     const result = await fetch("http://localhost:5005/", {
@@ -18,6 +19,20 @@ const DataFetcher: React.FC = () => {
       body: JSON.stringify({ gameName, tagline }),
     });
     return result.json();
+  };
+
+  const pollForRetriedMatch = (matchId: string) => {
+    setTimeout(async () => {
+      const res = await fetch(`http://localhost:5005/retried-match/${matchId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.match) {
+          setMatches((prev) => [...prev, data.match]);
+          setFailedMatches((prev) => prev.filter((id) => id !== matchId));
+        }
+      }
+      // No further retry attempts after this one
+    }, 15000); // Wait 15 seconds before making the single retry request
   };
 
   const matchDataList = useMutation({
@@ -31,6 +46,13 @@ const DataFetcher: React.FC = () => {
     onSuccess: (data) => {
       setPuuid(data.puuid || "");
       setMatches(Array.isArray(data.matchDataList) ? data.matchDataList : []);
+      setFailedMatches(
+        Array.isArray(data.failedMatches) ? data.failedMatches : []
+      );
+      // Start polling for each failed match
+      (data.failedMatches || []).forEach((matchId: string) => {
+        pollForRetriedMatch(matchId);
+      });
     },
   });
 
@@ -59,6 +81,12 @@ const DataFetcher: React.FC = () => {
               matchData={match}
             />
           ))
+        )}
+        {failedMatches.length > 0 && (
+          <div className="text-yellow-600 mt-4">
+            Retrying {failedMatches.length} failed match
+            {failedMatches.length > 1 ? "es" : ""}...
+          </div>
         )}
       </div>
     </div>

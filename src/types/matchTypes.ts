@@ -36,3 +36,13 @@ export interface TransformedMatchData {
   killParticipation: number;
   photoUrl: string;
 }
+
+export interface PlayerRow {
+  puuid: string;
+  championName: string;
+  kills: number;
+  deaths: number;
+  assists: number;
+  win: boolean;
+  teamId: number;
+}
