@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import queueData from "../data/queue.json";
 import { Queue } from "../types/queueTypes";
+import styles from "../styles/MatchCard.module.css";
 
 interface MatchCardProps {
   data: TransformedMatchData;
@@ -100,40 +101,106 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <Accordion type="single" collapsible>
+      <CardFooter className="w-full block">
+        <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
             <AccordionTrigger>Teams</AccordionTrigger>
             <AccordionContent>
-              {Object.entries(teams).map(([teamId, players]) => (
-                <Card key={teamId} className="mb-4">
-                  <CardHeader>
-                    <CardTitle>Team {teamId}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {players.map((player) => (
-                      <div
-                        key={player.puuid}
-                        className="flex justify-between items-center border-b py-2"
-                      >
-                        <div className="flex items-center">
-                          <img
-                            src={`https://ddragon.leagueoflegends.com/cdn/15.9.1/img/champion/${player.championName}.png`}
-                            alt={player.championName}
-                            className="w-8 h-8 rounded mr-2"
-                          />
-                          <span className="text-sm font-medium">
-                            {player.championName}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          K/D/A: {player.kills}/{player.deaths}/{player.assists}
+              <div className={`${styles.teamContainer} my-4 px-4`}>
+                {[100, 200].map((teamId) => {
+                  const isWinningTeam = teams[teamId]?.[0]?.win;
+                  const isMyTeam = teams[teamId]?.some(
+                    (player) => player.puuid === data.puuid
+                  );
+
+                  return (
+                    <div
+                      key={teamId}
+                      className={styles.teamCard}
+                      style={{
+                        border: `2px solid ${
+                          isWinningTeam ? "#4ade80" : "#ef4444"
+                        }`,
+                        background: isMyTeam
+                          ? "rgba(59, 130, 246, 0.1)"
+                          : "transparent",
+                      }}
+                    >
+                      <div className="p-4">
+                        <h3 className="font-semibold mb-4 text-center flex items-center justify-center gap-2">
+                          Team {teamId === 100 ? "Blue" : "Red"}
+                          {isMyTeam && (
+                            <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded">
+                              Your Team
+                            </span>
+                          )}
+                        </h3>
+                        <div className="space-y-2">
+                          {(teams[teamId] || []).map((player) => (
+                            <div
+                              key={player.puuid}
+                              className={`${styles.playerRow} ${
+                                player.puuid === data.puuid
+                                  ? "bg-blue-50 -mx-4 px-4"
+                                  : ""
+                              }`}
+                            >
+                              <div className={styles.championIcon}>
+                                <img
+                                  src={`https://ddragon.leagueoflegends.com/cdn/15.9.1/img/champion/${player.championName}.png`}
+                                  alt={player.championName}
+                                  className="w-full h-full object-cover rounded"
+                                />
+                              </div>
+
+                              <div className={styles.playerInfo}>
+                                <p
+                                  className={
+                                    player.puuid === data.puuid
+                                      ? "font-semibold"
+                                      : ""
+                                  }
+                                >
+                                  {player.championName}
+                                </p>
+
+                                <div className={styles.stats}>
+                                  <p className="text-sm text-gray-500">
+                                    ⚔️: {player.kills} | ☠️: {player.deaths} |
+                                    🤝: {player.assists}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    KDA:{" "}
+                                    {(
+                                      (player.kills + player.assists) /
+                                      Math.max(1, player.deaths)
+                                    ).toFixed(2)}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    Kill/Par:{" "}
+                                    {Math.round(
+                                      ((player.kills + player.assists) /
+                                        Math.max(
+                                          1,
+                                          teams[teamId].reduce(
+                                            (sum, p) => sum + p.kills,
+                                            0
+                                          )
+                                        )) *
+                                        100
+                                    )}
+                                    %
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              ))}
+                    </div>
+                  );
+                })}
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

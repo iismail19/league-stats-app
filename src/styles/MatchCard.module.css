@@ -1,0 +1,57 @@
+.teamGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+.teamContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: 100%;
+  min-width: 0;
+  margin: 1rem 0;
+  padding: 0 1rem;
+}
+
+.teamCard {
+  width: 100%;
+  min-width: 0;
+  background: var(--background);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Add these new styles */
+.playerRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.playerRow:last-child {
+  border-bottom: none;
+}
+
+.playerInfo {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+}
+
+.championIcon {
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+}
+
+.stats {
+  text-align: right;
+  flex-shrink: 0;
+}

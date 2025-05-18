@@ -73,10 +73,9 @@ const DataFetcher: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Summoner Search</h1>
+    <div className="flex flex-col items-center w-full max-w-5xl px-2">
       <CardWithSearch onSearch={handleSearch} />
-      <div>
+      <div className="flex flex-col w-full gap-4 mt-4">
         {matchDataList.isError && (
           <div>Error: {matchDataList.error.message}</div>
         )}
