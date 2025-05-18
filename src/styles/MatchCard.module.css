@@ -13,6 +13,8 @@
   min-width: 0;
   margin: 1rem 0;
   padding: 0 1rem;
+  position: relative; /* Add this */
+  top: 0; /* Add this */
 }
 
 .teamCard {
@@ -54,4 +56,60 @@
 .stats {
   text-align: right;
   flex-shrink: 0;
+}
+
+/* Add to existing styles */
+:global([data-state="closed"]),
+:global([data-state="open"]) {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s;
+  position: relative; /* Add this */
+}
+
+/* Add styles for the accordion content container */
+:global(.accordion-content) {
+  width: 100%;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Override accordion trigger styles */
+:global(.accordion-trigger) {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0.75rem 1rem !important;
+  background-color: transparent !important;
+  border-radius: 0.375rem !important;
+  transition: background-color 0.2s !important;
+  min-height: unset !important;
+  height: auto !important;
+  position: relative !important;
+}
+
+:global(.accordion-trigger:hover) {
+  background-color: #f9fafb !important;
+}
+
+/* Fix accordion header and content positioning */
+:global([data-state="open"]) {
+  display: block !important;
+  width: 100% !important;
+}
+
+:global(.accordion-header) {
+  width: 100% !important;
+  display: block !important;
+}
+
+:global(.accordion-content) {
+  width: 100% !important;
+  display: block !important;
+  padding-top: 0.5rem !important;
 }
