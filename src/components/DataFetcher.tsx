@@ -115,18 +115,17 @@ const DataFetcher: React.FC = () => {
         {matchDataList.isError && (
           <div>Error: {matchDataList.error.message}</div>
         )}
-        {matches.length === 0 && !matchDataList.isMutating ? (
+        {matches.length === 0 && !matchDataList.isMutating && puuid && (
           <div>No matches found.</div>
-        ) : (
-          matches.map((match) => (
-            <MatchCard
-              key={match.metadata.matchId}
-              data={transformMatchData(match, puuid)}
-              gameName={gameName}
-              matchData={match}
-            />
-          ))
         )}
+        {matches.map((match) => (
+          <MatchCard
+            key={match.metadata.matchId}
+            data={transformMatchData(match, puuid)}
+            gameName={gameName}
+            matchData={match}
+          />
+        ))}
         {failedMatches.length > 0 && (
           <div className="text-yellow-600 mt-4">
             Retrying {failedMatches.length} failed match

@@ -72,8 +72,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
       <CardHeader className="text-parchment-500">
         {" "}
         {/* Use parchment color for text */}
+        {/* <p className="text-parchment-400">{data.matchId}</p> */}{" "}
+        {/* Uncomment if you want to show matchId */}
         <CardTitle>{gameName}</CardTitle>
-        <p className="text-parchment-400">{data.matchId}</p>
         <CardDescription className="text-parchment-300">
           {data.win ? "Victory" : "Defeat"} - {queueDescription}
         </CardDescription>
@@ -141,11 +142,6 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
                       <div className="p-4">
                         <h3 className="font-semibold mb-4 text-center flex items-center justify-center gap-2">
                           Team {teamId === 100 ? "Blue " : "Red "}
-                          {isMyTeam && (
-                            <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded">
-                              - My Team
-                            </span>
-                          )}
                         </h3>
                         <div className="space-y-2">
                           {(teams[teamId] || []).map((player) => (
@@ -156,8 +152,31 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
                                   ? "bg-blue-50 -mx-4 px-4"
                                   : ""
                               }`}
+                              style={{ position: "relative" }}
                             >
-                              <div className={styles.championIcon}>
+                              {/* Centered summoner name, does not affect layout */}
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  left: 0,
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  pointerEvents: "none",
+                                  zIndex: 1,
+                                }}
+                              >
+                                <p className="text-sm font-bold text-center opacity-60 bg-white/80 px-2 rounded">
+                                  {player.riotIdGameName}
+                                </p>
+                              </div>
+                              <div
+                                className={styles.championIcon}
+                                style={{ zIndex: 2 }}
+                              >
                                 <img
                                   src={`https://ddragon.leagueoflegends.com/cdn/15.9.1/img/champion/${player.championName}.png`}
                                   alt={player.championName}
@@ -166,11 +185,6 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
                                 <p className="text-sm text-gray-500 text-center">
                                   {player.lane.charAt(0).toUpperCase() +
                                     player.lane.slice(1)}
-                                </p>
-                              </div>
-                              <div className="flex-1 flex items-center justify-center">
-                                <p className="text-sm font-medium truncate text-center">
-                                  {player.riotIdGameName}
                                 </p>
                               </div>
                               <div className={styles.playerInfo}>
