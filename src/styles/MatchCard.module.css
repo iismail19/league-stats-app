@@ -32,7 +32,8 @@
   align-items: center;
   gap: 1rem;
   padding: 0.5rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: #f9fafb 1px solid;
+  margin: 0 3px;
 }
 
 .playerRow:last-child {
