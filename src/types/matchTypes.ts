@@ -5,6 +5,10 @@ export interface Participant {
   kills: number;
   deaths: number;
   assists: number;
+  lane?: string; // Optional, sometimes missing
+  totalMinionsKilled?: number; // Optional, sometimes missing
+  riotIdGameName?: string; // Optional, sometimes missing
+  profileIconId?: number; // Optional, for future use
 }
 
 export interface Team {
@@ -35,6 +39,10 @@ export interface TransformedMatchData {
   kda: string;
   killParticipation: number;
   photoUrl: string;
+  lane: string;
+  cs: number; // Alias for totalMinionsKilled
+  riotIdGameName: string;
+  puuid: string;
 }
 
 export interface PlayerRow {
@@ -45,4 +53,7 @@ export interface PlayerRow {
   assists: number;
   win: boolean;
   teamId: number;
+  lane: string;
+  cs: number;
+  riotIdGameName: string;
 }

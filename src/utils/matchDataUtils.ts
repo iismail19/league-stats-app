@@ -25,10 +25,13 @@ export const transformMatchData = (
 
   const teamKills = match.info.participants
     .filter((user) => user.teamId === teamId)
-    .reduce((total, user) => total + user.kills, 0);
+    .reduce((total, user) => total + (user.kills || 0), 0);
 
   const killParticipation =
     teamKills > 0 ? Math.round(((kills + assists) / teamKills) * 100) : 0;
+  const lane = participant.lane || "Unknown";
+  const cs = participant.totalMinionsKilled ?? 0;
+  const riotIdGameName = participant.riotIdGameName || "Unknown";
 
   return {
     matchId: match.metadata.matchId,
@@ -41,5 +44,9 @@ export const transformMatchData = (
     kda,
     killParticipation,
     photoUrl: `https://ddragon.leagueoflegends.com/cdn/15.9.1/img/champion/${champion}.png`,
+    lane,
+    cs,
+    riotIdGameName,
+    puuid,
   };
 };

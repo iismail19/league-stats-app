@@ -45,6 +45,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
           matchData.info.teams.find((team) => team.teamId === player.teamId)
             ?.win || false,
         teamId: player.teamId,
+        lane: player.lane || "Unknown",
+        cs: player.totalMinionsKilled ?? 0,
+        riotIdGameName: player.riotIdGameName || "Unknown",
       };
 
       if (!acc[player.teamId]) {
@@ -91,6 +94,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
               src={data.photoUrl}
               alt="Champion"
             />
+            <p className="text-sm text-gray-500 text-center">
+              {data.lane.charAt(0).toUpperCase() + data.lane.slice(1)}
+            </p>
           </div>
           <div className="flex-1 px-4 min-w-0">
             <p className="text-sm font-medium truncate">{gameName}</p>
@@ -103,6 +109,7 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
             <p className="text-sm text-gray-500">
               Kill/Par: {data.killParticipation}%
             </p>
+            <p className="text-sm text-gray-500">CS: {data.cs}</p>
           </div>
         </div>
       </CardContent>
@@ -133,10 +140,10 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
                     >
                       <div className="p-4">
                         <h3 className="font-semibold mb-4 text-center flex items-center justify-center gap-2">
-                          Team {teamId === 100 ? "Blue" : "Red"}
+                          Team {teamId === 100 ? "Blue " : "Red "}
                           {isMyTeam && (
                             <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded">
-                              Your Team
+                              - My Team
                             </span>
                           )}
                         </h3>
@@ -156,8 +163,16 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
                                   alt={player.championName}
                                   className="w-full h-full object-cover rounded"
                                 />
+                                <p className="text-sm text-gray-500 text-center">
+                                  {player.lane.charAt(0).toUpperCase() +
+                                    player.lane.slice(1)}
+                                </p>
                               </div>
-
+                              <div className="flex-1 flex items-center justify-center">
+                                <p className="text-sm font-medium truncate text-center">
+                                  {player.riotIdGameName}
+                                </p>
+                              </div>
                               <div className={styles.playerInfo}>
                                 <p
                                   className={
@@ -195,6 +210,9 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
                                         100
                                     )}
                                     %
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    CS: {player.cs}
                                   </p>
                                 </div>
                               </div>
