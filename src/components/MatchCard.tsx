@@ -58,17 +58,20 @@ const MatchCard: React.FC<MatchCardProps> = ({ data, matchData, gameName }) => {
 
   return (
     <Card
-      className="mx-5 mb-6 w-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 bg-cambridge-blue-500"
+      className={`mx-2 mb-6 w-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
       style={{
-        border: data.win ? "2px solid #04724d" : "2px solid #d2ab99",
         boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
         margin: "10px",
+        backgroundColor: data.win ? "#A7C957" : "#BC4749", // yellow-green for wins, bittersweet for losses
+        color: data.win ? "black" : "white",
       }}
     >
-      <CardHeader className="text-viridian-900">
+      <CardHeader className="text-parchment-500">
+        {" "}
+        {/* Use parchment color for text */}
         <CardTitle>{gameName}</CardTitle>
-        <p className="text-viridian-700">{data.matchId}</p>
-        <CardDescription className="text-viridian-800">
+        <p className="text-parchment-400">{data.matchId}</p>
+        <CardDescription className="text-parchment-300">
           {data.win ? "Victory" : "Defeat"} - {queueDescription}
         </CardDescription>
       </CardHeader>

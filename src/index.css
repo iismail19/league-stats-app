@@ -18,13 +18,21 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --background: 63 11% 75%; /* ash-gray */
-  --foreground: 19 27% 82%; /* desert-sand */
-  --card: 117 22% 70%; /* cambridge-blue */
-  --card-foreground: 148 36% 53%; /* viridian */
-  --primary: 160 96% 45%; /* spring-green */
-  --primary-foreground: 0 0% 100%;
-  --border: 148 22% 43%; /* viridian */
+  --background: 0 0% 100%;
+  --foreground: 132 29% 31%; /* hunter-green */
+  --card: 43 57% 88%; /* parchment */
+  --card-foreground: 132 29% 31%; /* hunter-green */
+  --primary: 98 32% 45%; /* asparagus */
+  --primary-foreground: 43 57% 88%; /* parchment */
+  --secondary: 78 51% 56%; /* yellow-green */
+  --secondary-foreground: 132 29% 31%; /* hunter-green */
+  --muted: 43 57% 88%; /* parchment */
+  --muted-foreground: 132 29% 31%; /* hunter-green */
+  --accent: 78 51% 56%; /* yellow-green */
+  --accent-foreground: 132 29% 31%; /* hunter-green */
+  --destructive: 359 47% 51%; /* bittersweet */
+  --destructive-foreground: 43 57% 88%; /* parchment */
+  --border: 98 32% 45%; /* asparagus */
 }
 
 a {
