@@ -26,9 +26,11 @@ export function CardWithSearch({ onSearch }: CardWithSearchProps) {
   };
 
   return (
-    <Card className="w-[350px]">
+    <Card className="w-[350px] bg-cambridge-blue-400">
       <CardHeader>
-        <CardTitle>Enter Game Name + Tag</CardTitle>
+        <CardTitle className="text-viridian-900">
+          Enter Game Name + Tag
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
@@ -39,6 +41,7 @@ export function CardWithSearch({ onSearch }: CardWithSearchProps) {
                 placeholder="Game Name"
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
+                className="bg-ash-gray-200 text-viridian-900 placeholder:text-viridian-600"
               />
               <Input
                 id="tag"
@@ -49,7 +52,12 @@ export function CardWithSearch({ onSearch }: CardWithSearchProps) {
             </div>
           </div>
           <CardFooter className="flex justify-between mt-4">
-            <Button type="submit">Get Stats</Button>
+            <Button
+              type="submit"
+              className="bg-spring-green hover:bg-spring-green-600 text-white"
+            >
+              Get Stats
+            </Button>
           </CardFooter>
         </form>
       </CardContent>

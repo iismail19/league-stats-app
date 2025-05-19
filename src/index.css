@@ -17,6 +17,14 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --background: 63 11% 75%; /* ash-gray */
+  --foreground: 19 27% 82%; /* desert-sand */
+  --card: 117 22% 70%; /* cambridge-blue */
+  --card-foreground: 148 36% 53%; /* viridian */
+  --primary: 160 96% 45%; /* spring-green */
+  --primary-foreground: 0 0% 100%;
+  --border: 148 22% 43%; /* viridian */
 }
 
 a {
@@ -34,6 +42,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  @apply bg-ash-gray-500 text-viridian-900;
 }
 
 h1 {
