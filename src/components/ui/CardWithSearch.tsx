@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "./card";
 import { Input } from "@/components/ui/input";
+import styles from "@/styles/CardWithSearch.module.css";
 
 interface CardWithSearchProps {
   onSearch: (gameName: string, tagline: string) => void;
@@ -38,7 +39,7 @@ export function CardWithSearch({ onSearch }: CardWithSearchProps) {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="h-8 w-[80px] rounded-md bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-400"
+              className={`${styles.statsButton} h-8 rounded-md bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-400`}
             >
               Get Stats
             </button>

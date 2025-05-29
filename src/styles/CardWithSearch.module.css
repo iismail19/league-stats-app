@@ -1,23 +1,6 @@
-.searchButton {
-  width: 120px;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.buttonContainer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding-top: 8px;
-  position: relative;
+.statsButton {
+  width: auto !important;
+  display: inline-flex !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
 }

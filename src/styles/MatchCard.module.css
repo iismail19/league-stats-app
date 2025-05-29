@@ -68,7 +68,7 @@ button {
 
 :global(.accordion-trigger) {
   all: unset;
-  width: 100% !important;
+  width: calc(100% - 2rem) !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -79,7 +79,7 @@ button {
   height: auto !important;
   position: relative !important;
   text-align: center !important;
-  margin: 0 !important;
+  margin: 0 1rem !important;
   border-radius: 0 !important;
   border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
   font-weight: 500 !important;
