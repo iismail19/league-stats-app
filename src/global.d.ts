@@ -1,5 +1,14 @@
-// filepath: c:\Users\samoo\CodeProjects\league-stats-app\src\global.d.ts
 declare module "*.json" {
   const value: any;
   export default value;
+}
+
+declare module "*.module.css" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
+
+declare module "*.css" {
+  const content: { [className: string]: string };
+  export default content;
 }

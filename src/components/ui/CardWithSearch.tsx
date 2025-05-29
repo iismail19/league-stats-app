@@ -1,16 +1,6 @@
 import React, { useState } from "react";
-
-import { Button } from "./button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./card";
+import { Card, CardContent } from "./card";
 import { Input } from "@/components/ui/input";
-import { Label } from "./label";
 
 interface CardWithSearchProps {
   onSearch: (gameName: string, tagline: string) => void;
@@ -26,39 +16,33 @@ export function CardWithSearch({ onSearch }: CardWithSearchProps) {
   };
 
   return (
-    <Card className="w-[350px] bg-cambridge-blue-400">
-      <CardHeader>
-        <CardTitle className="text-viridian-900">
-          Enter Game Name + Tag
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col space-y-1.5">
-            <div className="flex space-x-2">
-              <Input
-                id="name"
-                placeholder="Game Name"
-                value={gameName}
-                onChange={(e) => setGameName(e.target.value)}
-                className="bg-ash-gray-200 text-viridian-900 placeholder:text-viridian-600"
-              />
-              <Input
-                id="tag"
-                placeholder="#NA1"
-                value={tagline}
-                onChange={(e) => setTagline(e.target.value)}
-              />
-            </div>
+    <Card className="w-[400px] bg-gradient-to-br from-gray-800 to-gray-900 shadow-xl">
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              id="name"
+              placeholder="Game Name"
+              value={gameName}
+              onChange={(e) => setGameName(e.target.value)}
+              className="flex-[2] bg-gray-700 text-white border-gray-600 placeholder:text-gray-400 focus:border-blue-500"
+            />
+            <Input
+              id="tag"
+              placeholder="#NA1"
+              value={tagline}
+              onChange={(e) => setTagline(e.target.value)}
+              className="flex-1 bg-gray-700 text-white border-gray-600 placeholder:text-gray-400 focus:border-blue-500"
+            />
           </div>
-          <CardFooter className="flex justify-between mt-4">
-            <Button
+          <div className="flex justify-center">
+            <button
               type="submit"
-              className="bg-spring-green hover:bg-spring-green-600 text-white"
+              className="h-8 w-[80px] rounded-md bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-400"
             >
               Get Stats
-            </Button>
-          </CardFooter>
+            </button>
+          </div>
         </form>
       </CardContent>
     </Card>

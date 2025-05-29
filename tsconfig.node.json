@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
+    "composite": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": ["vite.config.ts"]
 }

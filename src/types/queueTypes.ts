@@ -1,4 +1,8 @@
 export interface Queue {
   queueId: number;
-  description: string;
+  map: string;
+  description: string | null;
+  notes: string | null;
 }
+
+export type QueueData = Queue[];
