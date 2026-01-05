@@ -34,9 +34,18 @@ function App() {
         setSummonerData({ id: data.summonerId, puuid: data.puuid, name: '', summonerLevel: 0 });
       } else if (data.puuid) {
         // Fallback: try to fetch from API with tagline for regional server
-        const summoner = await getSummonerByPuuid(data.puuid, taglineInput);
-        console.log('Summoner data fetched:', summoner);
-        setSummonerData(summoner);
+        // Don't block on this - RankCard can work with just puuid
+        getSummonerByPuuid(data.puuid, taglineInput)
+          .then((summoner) => {
+            console.log('Summoner data fetched:', summoner);
+            if (summoner) {
+              setSummonerData(summoner);
+            }
+          })
+          .catch((err) => {
+            console.warn('Failed to fetch summoner data (non-critical):', err);
+            // Don't set error - rank card can still work with just puuid
+          });
       }
     } catch (err) {
       console.error('Search error:', err);
@@ -86,19 +95,12 @@ function App() {
             {/* Left Sidebar */}
             <aside className="flex-shrink-0">
               <div className="sticky top-8 space-y-4">
-                {summonerData ? (
+                {matches?.puuid && (
                   <RankCard 
-                    encryptedSummonerId={summonerData.id} 
+                    encryptedSummonerId={summonerData?.id || matches.summonerId || 'placeholder'} 
                     tagline={tagline} 
-                    puuid={matches?.puuid}
+                    puuid={matches.puuid}
                   />
-                ) : (
-                  <div className="bg-[#1e2328] rounded-lg p-4 border border-[#2d3748]">
-                    <h3 className="text-sm font-semibold text-white mb-2">Ranked Solo/Duo</h3>
-                    <div className="text-sm text-[#6b7280]">
-                      {matches.puuid ? 'Unable to load rank data. Check console for errors.' : 'Loading...'}
-                    </div>
-                  </div>
                 )}
                 <PlayerStatsPanel puuid={matches.puuid} />
               </div>

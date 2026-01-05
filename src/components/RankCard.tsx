@@ -16,7 +16,7 @@ interface RankCardProps {
   puuid?: string; // Optional: use puuid endpoint if available (better API key access)
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://league-backend-ot61.onrender.com';
 
 const getTierColor = (tier: string): string => {
   const tierMap: Record<string, string> = {
