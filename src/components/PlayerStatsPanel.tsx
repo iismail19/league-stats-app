@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ChampionImage } from './ChampionImage';
-import { formatNumber } from '../utils/matchUtils';
 
 interface PlayerStats {
   matchesAnalyzed: number;

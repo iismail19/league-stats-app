@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://league-backend-ot61.onrender.com';
 
 export interface SearchRequest {
   gameName: string;
