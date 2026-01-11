@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ChampionImage } from './ChampionImage';
+import { getApiBaseUrl } from '../utils/api';
 
 interface PlayerStats {
   matchesAnalyzed: number;
@@ -25,7 +26,7 @@ interface PlayerStatsPanelProps {
   numMatches?: number;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://league-backend-ot61.onrender.com';
+const API_BASE_URL = getApiBaseUrl();
 
 export const PlayerStatsPanel = ({ puuid, numMatches = 20 }: PlayerStatsPanelProps) => {
   const [stats, setStats] = useState<PlayerStats | null>(null);

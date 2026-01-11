@@ -1,4 +1,22 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://league-backend-ot61.onrender.com';
+/**
+ * Get the API base URL based on environment.
+ * - If VITE_API_URL is explicitly set, use it (allows override in Render/production)
+ * - If running in development (npm run dev), use localhost:5005
+ * - Otherwise (production build), use the Render backend URL
+ */
+export const getApiBaseUrl = (): string => {
+  // If VITE_API_URL is explicitly set, use it (takes precedence)
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Use localhost in development (npm run dev), Render URL in production
+  return import.meta.env.DEV 
+    ? 'http://localhost:5005'
+    : 'https://league-backend-ot61.onrender.com';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface SearchRequest {
   gameName: string;

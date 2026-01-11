@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getRankImageUrl, getRankDisplayName } from '../utils/rankImages';
+import { getApiBaseUrl } from '../utils/api';
 
 interface RankEntry {
   queueType: string;
@@ -16,7 +17,7 @@ interface RankCardProps {
   puuid?: string; // Optional: use puuid endpoint if available (better API key access)
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://league-backend-ot61.onrender.com';
+const API_BASE_URL = getApiBaseUrl();
 
 const getTierColor = (tier: string): string => {
   const tierMap: Record<string, string> = {
