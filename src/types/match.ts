@@ -52,5 +52,10 @@ export interface MatchListResponse {
   matchDataList: Match[];
   failedMatches: string[];
   summonerId?: string; // Optional: encryptedSummonerId if available from match data
+  // Pagination fields (from updated backend)
+  hasMore?: boolean;       // true if more matches available
+  nextStartIndex?: number; // starting index for next batch
+  totalLoaded?: number;    // total matches loaded
+  retryAfter?: number;     // seconds to wait if rate limited
 }
 

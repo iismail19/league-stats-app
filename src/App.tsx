@@ -1,10 +1,16 @@
-import { useState } from 'react';
-import { SearchBar } from './components/SearchBar';
+import { useState, useEffect } from 'react';
+import { HeroHeader } from './components/HeroHeader';
 import { MatchCard } from './components/MatchCard';
 import { PlayerStatsPanel } from './components/PlayerStatsPanel';
 import { RankCard } from './components/RankCard';
+import { LoadMoreButton } from './components/LoadMoreButton';
 import { searchSummoner, getSummonerByPuuid } from './utils/api';
 import type { MatchListResponse, SummonerData } from './utils/api';
+import {
+  getRecentSearches,
+  addRecentSearch,
+  clearRecentSearches,
+} from './utils/recentSearches';
 
 function App() {
   const [matches, setMatches] = useState<MatchListResponse | null>(null);
@@ -14,6 +20,20 @@ function App() {
   const [tagline, setTagline] = useState<string>('NA1');
   const [summonerData, setSummonerData] = useState<SummonerData | null>(null);
 
+  // Pagination state
+  const [hasMoreMatches, setHasMoreMatches] = useState(true);
+  const [nextStartIndex, setNextStartIndex] = useState(20);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [retryAfter, setRetryAfter] = useState<number | undefined>();
+
+  // Recent searches state
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // Load recent searches on mount
+  useEffect(() => {
+    setRecentSearches(getRecentSearches());
+  }, []);
+
   const handleSearch = async (gameName: string, taglineInput: string) => {
     setIsLoading(true);
     setError(null);
@@ -21,20 +41,31 @@ function App() {
     setTagline(taglineInput.toUpperCase());
     setSummonerData(null);
 
+    // Reset pagination state for new search
+    setHasMoreMatches(true);
+    setNextStartIndex(20);
+    setRetryAfter(undefined);
+
     try {
-      const data = await searchSummoner(gameName, taglineInput);
+      const data = await searchSummoner(gameName, taglineInput, 0, 20);
       console.log('Received data:', data);
       console.log('Match count:', data.matchDataList?.length);
       setMatches(data);
-      
+
+      // Update pagination state from response
+      setHasMoreMatches(data.hasMore ?? data.matchDataList?.length === 20);
+      setNextStartIndex(data.nextStartIndex ?? 20);
+      setRetryAfter(data.retryAfter);
+
+      // Save to recent searches
+      addRecentSearch(gameName, taglineInput);
+      setRecentSearches(getRecentSearches());
+
       // Fetch summoner data for rank card
-      // First try to use summonerId from match data if available
       if (data.summonerId) {
         console.log('Using summonerId from match data:', data.summonerId);
         setSummonerData({ id: data.summonerId, puuid: data.puuid, name: '', summonerLevel: 0 });
       } else if (data.puuid) {
-        // Fallback: try to fetch from API with tagline for regional server
-        // Don't block on this - RankCard can work with just puuid
         getSummonerByPuuid(data.puuid, taglineInput)
           .then((summoner) => {
             console.log('Summoner data fetched:', summoner);
@@ -44,7 +75,6 @@ function App() {
           })
           .catch((err) => {
             console.warn('Failed to fetch summoner data (non-critical):', err);
-            // Don't set error - rank card can still work with just puuid
           });
       }
     } catch (err) {
@@ -57,23 +87,59 @@ function App() {
     }
   };
 
+  const handleLoadMore = async () => {
+    if (!matches?.puuid || isLoadingMore) return;
+
+    // Parse the searched name to get gameName and tagline
+    const searchParts = searchedName.split(' #');
+    if (searchParts.length !== 2) return;
+
+    const gameName = searchParts[0];
+    const tag = searchParts[1];
+
+    setIsLoadingMore(true);
+    try {
+      const data = await searchSummoner(gameName, tag, nextStartIndex, 20);
+
+      // Append new matches to existing list
+      setMatches(prev => prev ? {
+        ...prev,
+        matchDataList: [...prev.matchDataList, ...data.matchDataList],
+        failedMatches: [...(prev.failedMatches || []), ...(data.failedMatches || [])],
+      } : null);
+
+      // Update pagination state
+      setHasMoreMatches(data.hasMore ?? data.matchDataList?.length === 20);
+      setNextStartIndex(data.nextStartIndex ?? nextStartIndex + 20);
+      setRetryAfter(data.retryAfter);
+    } catch (err) {
+      console.error('Failed to load more matches:', err);
+      // Don't set main error - just log it
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  const handleClearRecent = () => {
+    clearRecentSearches();
+    setRecentSearches([]);
+  };
+
+  const hasResults = matches !== null && matches.matchDataList.length > 0;
+
   return (
     <div className="min-h-screen bg-[#0f1419]">
-      {/* Header */}
-      <header className="border-b border-[#2d3748] bg-[#1a1f2e]">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-3xl font-bold text-white mb-2">League Stats</h1>
-          <p className="text-[#a0a0a0]">Search for summoner match history</p>
-        </div>
-      </header>
+      {/* Hero Header */}
+      <HeroHeader
+        onSearch={handleSearch}
+        isLoading={isLoading}
+        hasResults={hasResults}
+        recentSearches={recentSearches}
+        onClearRecent={handleClearRecent}
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Search Section */}
-        <div className="mb-8">
-          <SearchBar onSearch={handleSearch} isLoading={isLoading} />
-        </div>
-
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400">
@@ -94,11 +160,11 @@ function App() {
           <div className="flex gap-6">
             {/* Left Sidebar */}
             <aside className="flex-shrink-0">
-              <div className="sticky top-8 space-y-4">
+              <div className="sticky top-24 space-y-4">
                 {matches?.puuid && (
-                  <RankCard 
-                    encryptedSummonerId={summonerData?.id || matches.summonerId || 'placeholder'} 
-                    tagline={tagline} 
+                  <RankCard
+                    encryptedSummonerId={summonerData?.id || matches.summonerId || 'placeholder'}
+                    tagline={tagline}
                     puuid={matches.puuid}
                   />
                 )}
@@ -129,29 +195,41 @@ function App() {
                       ))
                       .filter(Boolean)}
                   </div>
-                {/* Show message if no cards rendered */}
-                {matches.matchDataList.length > 0 && 
-                 matches.matchDataList.filter((match) => {
-                   const player = match.info.participants.find((p: any) => p.puuid === matches.puuid);
-                   return !!player;
-                 }).length === 0 && (
-                  <div className="text-center py-8 text-yellow-400">
-                    <p>Matches found but player data not available. Check console for details.</p>
-                  </div>
-                )}
-                {/* Debug info - remove in production */}
-                {import.meta.env.DEV && (
-                  <details className="mt-6 p-4 bg-[#1a1f2e] rounded-lg text-xs">
-                    <summary className="cursor-pointer text-[#a0a0a0] mb-2">Debug Info</summary>
-                    <pre className="text-[#6b7280] overflow-auto">
-                      {JSON.stringify({ 
-                        puuid: matches.puuid, 
-                        matchCount: matches.matchDataList.length,
-                        firstMatchParticipants: matches.matchDataList[0]?.info?.participants?.map((p: any) => p.puuid).slice(0, 3)
-                      }, null, 2)}
-                    </pre>
-                  </details>
-                )}
+                  {/* Show message if no cards rendered */}
+                  {matches.matchDataList.length > 0 &&
+                   matches.matchDataList.filter((match) => {
+                     const player = match.info.participants.find((p: any) => p.puuid === matches.puuid);
+                     return !!player;
+                   }).length === 0 && (
+                    <div className="text-center py-8 text-yellow-400">
+                      <p>Matches found but player data not available. Check console for details.</p>
+                    </div>
+                  )}
+
+                  {/* Load More Button */}
+                  <LoadMoreButton
+                    onClick={handleLoadMore}
+                    isLoading={isLoadingMore}
+                    hasMore={hasMoreMatches}
+                    matchesLoaded={matches.matchDataList.length}
+                    retryAfter={retryAfter}
+                  />
+
+                  {/* Debug info - remove in production */}
+                  {import.meta.env.DEV && (
+                    <details className="mt-6 p-4 bg-[#1a1f2e] rounded-lg text-xs">
+                      <summary className="cursor-pointer text-[#a0a0a0] mb-2">Debug Info</summary>
+                      <pre className="text-[#6b7280] overflow-auto">
+                        {JSON.stringify({
+                          puuid: matches.puuid,
+                          matchCount: matches.matchDataList.length,
+                          hasMore: hasMoreMatches,
+                          nextStartIndex: nextStartIndex,
+                          firstMatchParticipants: matches.matchDataList[0]?.info?.participants?.map((p: any) => p.puuid).slice(0, 3)
+                        }, null, 2)}
+                      </pre>
+                    </details>
+                  )}
                 </>
               ) : (
                 <div className="text-center py-12">
@@ -167,8 +245,8 @@ function App() {
           </div>
         )}
 
-        {/* Empty State */}
-        {!matches && !isLoading && !error && (
+        {/* Empty State - only show when no results and not loading */}
+        {!matches && !isLoading && !error && !hasResults && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">⚔️</div>
             <h2 className="text-2xl font-bold text-white mb-2">Search for a Summoner</h2>
