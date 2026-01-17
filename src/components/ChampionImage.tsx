@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getChampionImageUrl, getChampionImageUrlFallback } from '../utils/championImages';
+import { getLatestDataDragonVersion } from '../utils/dataDragon';
 
 interface ChampionImageProps {
   championName: string;
@@ -16,6 +17,7 @@ const sizeClasses = {
 export const ChampionImage = ({ championName, size = 'md', className = '' }: ChampionImageProps) => {
   const [imageError, setImageError] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
+  const [retryRiot, setRetryRiot] = useState(false);
 
   if (imageError) {
     return (
@@ -27,24 +29,40 @@ export const ChampionImage = ({ championName, size = 'md', className = '' }: Cha
     );
   }
 
-  const imageUrl = useFallback 
-    ? getChampionImageUrlFallback(championName)
-    : getChampionImageUrl(championName);
+  // Strategy: Try Riot CDN first, then Community Dragon, then retry Riot CDN (in case version loaded)
+  let imageUrl: string;
+  if (retryRiot) {
+    // Retry Riot CDN after version might have loaded
+    imageUrl = getChampionImageUrl(championName);
+  } else if (useFallback) {
+    // Use Community Dragon fallback
+    imageUrl = getChampionImageUrlFallback(championName);
+  } else {
+    // Primary: Riot CDN
+    imageUrl = getChampionImageUrl(championName);
+  }
 
+  // Use imageUrl as key to force re-render when URL changes
   return (
     <img
+      key={imageUrl}
       src={imageUrl}
       alt={championName}
       className={`${sizeClasses[size]} ${className || 'rounded'} object-cover`}
       onError={() => {
-        if (!useFallback) {
-          // Try fallback URL
+        if (!useFallback && !retryRiot) {
+          // First failure: try Community Dragon fallback
           setUseFallback(true);
+        } else if (useFallback && !retryRiot) {
+          // Community Dragon failed: retry Riot CDN (version might be loaded now)
+          setRetryRiot(true);
         } else {
-          // Both failed, show placeholder
+          // All attempts failed, show placeholder
           console.warn(`Failed to load champion image for: ${championName}`, {
             primaryUrl: getChampionImageUrl(championName),
             fallbackUrl: getChampionImageUrlFallback(championName),
+            version: getLatestDataDragonVersion(),
+            attemptedUrl: imageUrl,
           });
           setImageError(true);
         }
