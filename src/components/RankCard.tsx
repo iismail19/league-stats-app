@@ -57,12 +57,13 @@ export const RankCard = ({ encryptedSummonerId, tagline = 'NA1', puuid }: RankCa
 
   useEffect(() => {
     const fetchRank = async () => {
-      console.log('[RANK CARD] fetchRank called!', { encryptedSummonerId, tagline, puuid });
       setIsLoading(true);
       
       // PUUID is required for league entries (API limitation)
       if (!puuid) {
-        console.warn('[RANK CARD] PUUID is required for rank data - API only supports by-puuid endpoint');
+        if (import.meta.env.DEV) {
+          console.warn('[RANK CARD] PUUID is required for rank data');
+        }
         setRankData([]);
         setIsLoading(false);
         return;
@@ -71,11 +72,6 @@ export const RankCard = ({ encryptedSummonerId, tagline = 'NA1', puuid }: RankCa
       try {
         // Use by-puuid endpoint (required for API key access)
         const url = `${API_BASE_URL}/summoner/${encryptedSummonerId}/league?tagline=${encodeURIComponent(tagline)}&puuid=${encodeURIComponent(puuid)}`;
-        console.log('[RANK CARD] Fetching from URL:', url);
-        console.log('[RANK CARD] API_BASE_URL:', API_BASE_URL);
-        console.log('[RANK CARD] encryptedSummonerId:', encryptedSummonerId);
-        console.log('[RANK CARD] tagline:', tagline);
-        console.log('[RANK CARD] puuid:', puuid);
         
         const response = await fetch(url, {
           method: 'GET',
@@ -84,72 +80,49 @@ export const RankCard = ({ encryptedSummonerId, tagline = 'NA1', puuid }: RankCa
           },
           mode: 'cors',
         });
-        console.log('[RANK CARD] Response status:', response.status, response.ok);
-        console.log('[RANK CARD] Response headers:', Object.fromEntries(response.headers.entries()));
         
         if (response.ok) {
           const data = await response.json();
-          console.log('[RANK CARD] Rank data received:', data);
-          console.log('[RANK CARD] Rank data type:', Array.isArray(data) ? 'array' : typeof data);
-          console.log('[RANK CARD] Rank data length:', Array.isArray(data) ? data.length : 'N/A');
-          if (Array.isArray(data) && data.length > 0) {
-            console.log('[RANK CARD] Available queue types:', data.map((entry: RankEntry) => entry.queueType));
-            const soloDuoEntry = data.find((entry: RankEntry) => entry.queueType === 'RANKED_SOLO_5x5');
-            console.log('[RANK CARD] Solo/Duo entry found:', soloDuoEntry);
-          }
           const finalData = Array.isArray(data) ? data : [];
-          console.log('[RANK CARD] Setting rankData to:', finalData);
           setRankData(finalData);
         } else {
-          const errorText = await response.text();
-          console.error('[RANK CARD] Failed to fetch rank data:', response.status, response.statusText);
-          console.error('[RANK CARD] Error response body:', errorText);
-          try {
-            const errorData = JSON.parse(errorText);
-            console.error('[RANK CARD] Parsed error data:', errorData);
-            if (errorData.details) {
-              console.error('[RANK CARD] Riot API error details:', errorData.details);
+          // Only log errors in development
+          if (import.meta.env.DEV) {
+            const errorText = await response.text();
+            console.error('[RANK CARD] Failed to fetch rank data:', response.status);
+            try {
+              const errorData = JSON.parse(errorText);
+              if (errorData.status === 403) {
+                console.error('[RANK CARD] API authentication issue');
+              }
+            } catch (e) {
+              // Ignore parsing errors in production
             }
-            if (errorData.url) {
-              console.error('[RANK CARD] Failed URL:', errorData.url);
-            }
-            if (errorData.status === 403) {
-              console.error('[RANK CARD] ⚠️ API key may be invalid or expired for League v4 endpoint');
-            }
-          } catch (e) {
-            console.error('[RANK CARD] Could not parse error response as JSON');
+          } else {
+            // In production, still consume the response body to avoid memory leaks
+            await response.text();
           }
           setRankData([]);
         }
       } catch (err) {
-        console.error('[RANK CARD] Exception fetching rank data:', err);
-        if (err instanceof Error) {
-          console.error('[RANK CARD] Error message:', err.message);
-          console.error('[RANK CARD] Error stack:', err.stack);
-          if (err.message.includes('Failed to fetch')) {
-            console.error('[RANK CARD] ⚠️ Network error - check if backend is running on', API_BASE_URL);
-            console.error('[RANK CARD] This could be a CORS issue or backend not accessible');
-          }
+        // Only log errors in development
+        if (import.meta.env.DEV) {
+          console.error('[RANK CARD] Error fetching rank data:', err);
         }
         setRankData([]);
       } finally {
         setIsLoading(false);
       }
     };
-
-    console.log('[RANK CARD] useEffect triggered', { encryptedSummonerId, tagline, puuid });
     
     if (encryptedSummonerId) {
       if (puuid) {
-        console.log('[RANK CARD] Fetching rank for summoner ID:', encryptedSummonerId, `(using puuid: ${puuid})`);
         fetchRank();
       } else {
-        console.warn('[RANK CARD] No PUUID provided to RankCard - rank data requires puuid endpoint');
         setRankData([]);
         setIsLoading(false);
       }
     } else {
-      console.warn('[RANK CARD] No encryptedSummonerId provided to RankCard');
       setIsLoading(false);
     }
   }, [encryptedSummonerId, tagline, puuid]);
@@ -166,22 +139,15 @@ export const RankCard = ({ encryptedSummonerId, tagline = 'NA1', puuid }: RankCa
   }
 
   // Find Ranked Solo/Duo entry
-  console.log('[RANK CARD] Current rankData state:', rankData);
-  console.log('[RANK CARD] rankData length:', rankData?.length);
-  
   const soloDuo = rankData && rankData.length > 0 
     ? rankData.find((entry) => entry.queueType === 'RANKED_SOLO_5x5')
     : null;
   
-  console.log('[RANK CARD] Solo/Duo entry found in render:', soloDuo);
-  
   if (!soloDuo) {
-    // Show what queue types are available for debugging
+    // Show what queue types are available
     const availableQueues = rankData && rankData.length > 0 
       ? rankData.map((entry) => entry.queueType).join(', ')
       : 'none';
-    
-    console.log('[RANK CARD] No Solo/Duo found. Available queues:', availableQueues);
     
     return (
       <div className="bg-[#1e2328] rounded-lg p-4 border border-[#2d3748]">
@@ -192,9 +158,6 @@ export const RankCard = ({ encryptedSummonerId, tagline = 'NA1', puuid }: RankCa
             : rankData && rankData.length > 0 
               ? `No Solo/Duo rank (Available: ${availableQueues})`
               : 'No ranked data available'}
-        </div>
-        <div className="text-xs text-[#6b7280] mt-2">
-          {rankData === null && puuid && 'Check console for API errors'}
         </div>
       </div>
     );

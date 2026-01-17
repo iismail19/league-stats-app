@@ -42,7 +42,9 @@ export const PlayerStatsPanel = ({ puuid, numMatches = 20 }: PlayerStatsPanelPro
           setStats(data);
         }
       } catch (err) {
-        console.error('Failed to fetch player stats:', err);
+        if (import.meta.env.DEV) {
+          console.error('Failed to fetch player stats:', err);
+        }
       } finally {
         setIsLoading(false);
       }

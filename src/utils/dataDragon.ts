@@ -25,7 +25,10 @@ const fetchLatestVersion = async (): Promise<string> => {
       cachedVersion = versions[0]; // First entry is the latest version
       return cachedVersion;
     } catch (error) {
-      console.warn('Failed to fetch latest Data Dragon version, using fallback:', error);
+      // Only log in development
+      if (import.meta.env.DEV) {
+        console.warn('Failed to fetch latest Data Dragon version, using fallback:', error);
+      }
       // Fallback to default version
       cachedVersion = DEFAULT_VERSION;
       return cachedVersion;

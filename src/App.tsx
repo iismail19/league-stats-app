@@ -54,8 +54,6 @@ function App() {
 
     try {
       const data = await searchSummoner(gameName, taglineInput, 0, 20);
-      console.log('Received data:', data);
-      console.log('Match count:', data.matchDataList?.length);
       setMatches(data);
 
       // Update pagination state from response
@@ -69,22 +67,22 @@ function App() {
 
       // Fetch summoner data for rank card
       if (data.summonerId) {
-        console.log('Using summonerId from match data:', data.summonerId);
         setSummonerData({ id: data.summonerId, puuid: data.puuid, name: '', summonerLevel: 0 });
       } else if (data.puuid) {
         getSummonerByPuuid(data.puuid, taglineInput)
           .then((summoner) => {
-            console.log('Summoner data fetched:', summoner);
             if (summoner) {
               setSummonerData(summoner);
             }
           })
-          .catch((err) => {
-            console.warn('Failed to fetch summoner data (non-critical):', err);
+          .catch(() => {
+            // Silently handle non-critical errors
           });
       }
     } catch (err) {
-      console.error('Search error:', err);
+      if (import.meta.env.DEV) {
+        console.error('Search error:', err);
+      }
       setError(err instanceof Error ? err.message : 'Failed to fetch match data');
       setMatches(null);
       setSummonerData(null);
@@ -119,8 +117,10 @@ function App() {
       setNextStartIndex(data.nextStartIndex ?? nextStartIndex + 20);
       setRetryAfter(data.retryAfter);
     } catch (err) {
-      console.error('Failed to load more matches:', err);
-      // Don't set main error - just log it
+      if (import.meta.env.DEV) {
+        console.error('Failed to load more matches:', err);
+      }
+      // Don't set main error - silently fail
     } finally {
       setIsLoadingMore(false);
     }

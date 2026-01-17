@@ -23,7 +23,9 @@ export const MatchCard = ({ match, playerPuuid }: MatchCardProps) => {
   const player = getPlayerFromMatch(match, playerPuuid);
   
   if (!player) {
-    console.warn('Player not found in match:', { matchId: match.metadata.matchId, playerPuuid, participants: match.info.participants.length });
+    if (import.meta.env.DEV) {
+      console.warn('Player not found in match:', match.metadata.matchId);
+    }
     return null;
   }
 

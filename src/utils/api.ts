@@ -71,21 +71,24 @@ export const getSummonerByPuuid = async (puuid: string, tagline: string = 'NA1')
 
     if (response.ok) {
       const data = await response.json();
-      console.log('Summoner data fetched successfully:', data);
       return data;
     } else {
-      const errorData = await response.json().catch(() => ({}));
-      console.error(`Failed to fetch summoner (${response.status}):`, errorData);
-      // Check if it's a CORS error
-      if (response.status === 0 || response.type === 'opaque') {
-        console.error('CORS error detected - backend may not be running or CORS not configured');
+      // Only log in development
+      if (import.meta.env.DEV) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`Failed to fetch summoner (${response.status}):`, errorData);
+        if (response.status === 0 || response.type === 'opaque') {
+          console.error('CORS error detected');
+        }
+      } else {
+        // Consume response body in production
+        await response.text().catch(() => {});
       }
       return null;
     }
   } catch (err) {
-    console.error('Failed to fetch summoner:', err);
-    if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
-      console.error('Network error - check if backend is running on', API_BASE_URL);
+    if (import.meta.env.DEV) {
+      console.error('Failed to fetch summoner:', err);
     }
     return null;
   }

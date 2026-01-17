@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { getChampionImageUrl, getChampionImageUrlFallback } from '../utils/championImages';
-import { getLatestDataDragonVersion } from '../utils/dataDragon';
 
 interface ChampionImageProps {
   championName: string;
@@ -58,12 +57,9 @@ export const ChampionImage = ({ championName, size = 'md', className = '' }: Cha
           setRetryRiot(true);
         } else {
           // All attempts failed, show placeholder
-          console.warn(`Failed to load champion image for: ${championName}`, {
-            primaryUrl: getChampionImageUrl(championName),
-            fallbackUrl: getChampionImageUrlFallback(championName),
-            version: getLatestDataDragonVersion(),
-            attemptedUrl: imageUrl,
-          });
+          if (import.meta.env.DEV) {
+            console.warn(`Failed to load champion image for: ${championName}`);
+          }
           setImageError(true);
         }
       }}
