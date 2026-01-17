@@ -2,17 +2,26 @@ import { getLatestDataDragonVersion } from './dataDragon';
 
 /**
  * Normalize champion name for URL
+ * Handles various champion name formats from the API
  */
 const normalizeChampionName = (championName: string): string => {
-  // Handle special cases where champion names might differ
+  if (!championName) return '';
+
+  // Handle special cases where champion names might differ between API and CDN
   const nameMap: Record<string, string> = {
     'MonkeyKing': 'Wukong',
     'FiddleSticks': 'Fiddlesticks',
+    'KogMaw': 'KogMaw',
+    'RekSai': 'RekSai',
+    'Khazix': 'Khazix',
+    'ChoGath': 'Chogath',
+    'LeBlanc': 'Leblanc',
+    'VelKoz': 'Velkoz',
   };
 
   let normalizedName = nameMap[championName] || championName;
   
-  // Normalize the name for URL
+  // Normalize the name for URL - remove spaces, apostrophes, periods
   normalizedName = normalizedName
     .replace(/\s+/g, '') // Remove spaces
     .replace(/'/g, '') // Remove apostrophes
@@ -22,22 +31,22 @@ const normalizeChampionName = (championName: string): string => {
 };
 
 /**
- * Get champion square image URL - tries Community Dragon first (no version needed)
+ * Get champion square image URL from official Riot CDN (primary - uses latest version)
  */
 export const getChampionImageUrl = (championName: string): string => {
   const normalizedName = normalizeChampionName(championName);
-  
-  // Primary: Community Dragon - no version required, more reliable
-  return `https://ddragon.canisback.com/img/champion/${normalizedName}.png`;
+  const version = getLatestDataDragonVersion();
+  // Primary: Riot CDN with latest version (more reliable than Community Dragon)
+  return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${normalizedName}.png`;
 };
 
 /**
- * Get fallback champion image URL from official Riot CDN (uses latest cached version)
+ * Get fallback champion image URL from Community Dragon (no version needed)
  */
 export const getChampionImageUrlFallback = (championName: string): string => {
   const normalizedName = normalizeChampionName(championName);
-  const version = getLatestDataDragonVersion(); // Sync version getter
-  return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${normalizedName}.png`;
+  // Fallback: Community Dragon - no version required
+  return `https://ddragon.canisback.com/img/champion/${normalizedName}.png`;
 };
 
 /**

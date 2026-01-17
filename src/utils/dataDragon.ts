@@ -1,7 +1,7 @@
 // Cache for the latest Data Dragon version
 let cachedVersion: string | null = null;
 let versionFetchPromise: Promise<string> | null = null;
-const DEFAULT_VERSION = '15.1.1'; // Reasonable default that will be updated
+const DEFAULT_VERSION = '16.1.1'; // Current default (will be updated by fetch)
 
 /**
  * Fetch the latest Data Dragon version from Riot's API (async)

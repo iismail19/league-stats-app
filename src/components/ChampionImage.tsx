@@ -38,11 +38,14 @@ export const ChampionImage = ({ championName, size = 'md', className = '' }: Cha
       className={`${sizeClasses[size]} ${className || 'rounded'} object-cover`}
       onError={() => {
         if (!useFallback) {
-          // Try fallback URL first
+          // Try fallback URL
           setUseFallback(true);
         } else {
           // Both failed, show placeholder
-          console.warn(`Failed to load champion image for: ${championName}`);
+          console.warn(`Failed to load champion image for: ${championName}`, {
+            primaryUrl: getChampionImageUrl(championName),
+            fallbackUrl: getChampionImageUrlFallback(championName),
+          });
           setImageError(true);
         }
       }}
