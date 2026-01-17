@@ -33,3 +33,27 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* Hero gradient background */
+.hero-gradient {
+  background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 50%, #0f1419 100%);
+}
+
+/* Subtle grid pattern overlay */
+.hero-pattern {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Search input glow effect */
+.search-glow:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3),
+              0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* Smooth header transition */
+.header-transition {
+  transition: all 0.5s ease-out;
+}
