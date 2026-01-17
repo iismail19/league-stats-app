@@ -1,3 +1,5 @@
+import { getLatestDataDragonVersion } from './dataDragon';
+
 /**
  * Get rank emblem image URL from Riot CDN
  */
@@ -8,7 +10,7 @@ export const getRankImageUrl = (tier: string, rank: string): string => {
   
   // Riot CDN for rank emblems
   // Format varies by tier - some use tier_rank, some just tier
-  const version = '14.24.1';
+  const version = getLatestDataDragonVersion();
   
   // For tiers without ranks (Master, Grandmaster, Challenger)
   if (['MASTER', 'GRANDMASTER', 'CHALLENGER'].includes(tier.toUpperCase())) {

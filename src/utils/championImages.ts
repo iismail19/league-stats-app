@@ -1,3 +1,5 @@
+import { getLatestDataDragonVersion } from './dataDragon';
+
 /**
  * Normalize champion name for URL
  */
@@ -30,12 +32,11 @@ export const getChampionImageUrl = (championName: string): string => {
 };
 
 /**
- * Get fallback champion image URL from official Riot CDN
+ * Get fallback champion image URL from official Riot CDN (uses latest cached version)
  */
 export const getChampionImageUrlFallback = (championName: string): string => {
   const normalizedName = normalizeChampionName(championName);
-  // Using a recent version - update if needed
-  const version = '14.24.1';
+  const version = getLatestDataDragonVersion(); // Sync version getter
   return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${normalizedName}.png`;
 };
 

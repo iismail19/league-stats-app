@@ -1,11 +1,12 @@
+import { getLatestDataDragonVersion } from './dataDragon';
+
 /**
  * Get item image URL from Riot Data Dragon
  */
 export const getItemImageUrl = (itemId: number): string | null => {
   if (itemId === 0) return null; // No item
   
-  // Using a static version - can be updated if needed
-  const version = '14.24.1';
+  const version = getLatestDataDragonVersion();
   return `https://ddragon.leagueoflegends.com/cdn/${version}/img/item/${itemId}.png`;
 };
 
@@ -31,7 +32,7 @@ export const getSummonerSpellImageUrl = (spellId: number): string => {
   };
 
   const spellName = spellMap[spellId] || 'SummonerFlash';
-  const version = '14.24.1';
+  const version = getLatestDataDragonVersion();
   return `https://ddragon.leagueoflegends.com/cdn/${version}/img/spell/${spellName}.png`;
 };
 

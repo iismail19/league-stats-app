@@ -11,6 +11,7 @@ import {
   addRecentSearch,
   clearRecentSearches,
 } from './utils/recentSearches';
+import { initializeDataDragonVersion } from './utils/dataDragon';
 
 function App() {
   const [matches, setMatches] = useState<MatchListResponse | null>(null);
@@ -32,6 +33,11 @@ function App() {
   // Load recent searches on mount
   useEffect(() => {
     setRecentSearches(getRecentSearches());
+  }, []);
+
+  // Initialize Data Dragon version fetch on app startup
+  useEffect(() => {
+    initializeDataDragonVersion();
   }, []);
 
   const handleSearch = async (gameName: string, taglineInput: string) => {
